@@ -1,0 +1,11 @@
+langchain==0.3.26
+langchain_anthropic==0.3.17
+langchain_core==0.3.68
+langchain_openai==0.3.27
+langgraph==0.5.2
+matplotlib==3.10.3
+networkx==3.4.2
+numpy==1.26
+sentence_transformers==5.0.0
+# run in bash: pip install -r requirements.txt
+# better choose python==3.10
