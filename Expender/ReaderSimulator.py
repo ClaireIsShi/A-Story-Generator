@@ -16,13 +16,13 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 from utils import set_env,get_content_between_a_b
 from StoryState import StoryState
-
+from settings import UTIL_LLM, WRITE_LLM
 # Set environment variables
 set_env()
 
 # System prompt
 CHECK_SYS_PRMPT = """
-You're a delicate and experienced {topic} story reader and a native speaker of {language}. You're a good thinker and eager to speak out some issues in the story, you also focus on the details of the story. 
+You're a delicate and experienced {topic} story reader and a native speaker of {language}. You're a good thinker and eager to speak out about some issues in the story, and you also focus on the details of the story. 
 """
 # Simulated human author's question
 WRITER_ASK_PRMPT = """
@@ -30,20 +30,20 @@ I'm writing a story based on the following information:
 topic: {topic}, Main character: {main_character}, Main Goal:{main_goal} language: {language}.
 Now here's a part of my story: {story}.
 Do you have any idea about the story? Follow these steps to give me your response:
-1. You need to read this part of story CAREFULLY;
-2. Is there any part you find hard to logically understand? give me your confusion and suggestion. If you can understand this part of story well, then just give an empty input;
-3. Do these details in this part of story logically make sense? Do the character growth of {main_character} detailed enough? If not, give me your suggestion. Do you think the details good enough for you to understand this part of story? If you can understand character growth well, then just give me an empty response;
-give me your response in the following format:
+1. You need to read this part of the story CAREFULLY;
+2. Is there any part you find hard to logically understand? Give me your confusion and suggestions. If you can understand this part of the story well, then just give an empty input;
+3. Do these details in this part of the story logically make sense? Is the character growth of {main_character} detailed enough? If not, give me your suggestion. Do you think the details are good enough for you to understand this part of the story? If you can understand character growth well, then just give me an empty response.
+Give me your response in the following format:
 ## logical detail confusion:
-<here put your confusion and suggestion in logic of the part story in {language} you find in step 2>
-## character growth confusion:
-<here put your confusion and suggestion in character growth of the part story in {language} you find in step 3>
+<here, put your confusion and suggestion in the logic of the part story in {language} you find in step 2>
+## Character growth confusion:
+<here, put your confusion and suggestion in the character growth of the part story in {language} you find in step 3>
 ## END
 """
 
 # Single LLM, rewrite prompt
 REWRITE_PROMPT = """
-You're a good story writer and a native speaker of {language}. Now you get one part of your story:{story}. The story id based on these following information:
+You're a good story writer and a native speaker of {language}. Now you get one part of your story:{story}. The story is based on the following information:
 topic: {topic}, Main character: {main_character}, Main Goal:{main_goal} language: {language}.
 Your job now is to rewrite this story based on the following reader's suggestion:
 logical detail confusion and suggestion: {logical_confusion_and_suggestion}
@@ -78,8 +78,6 @@ class ReaderSimulator:
                 # System prompt defining the reader's role and context
                 ("system" , CHECK_SYS_PRMPT.format(
                     topic = self.topic,
-                    main_character = self.main_character,
-                    main_goal = self.main_goal,
                     language = self.language
                 )) ,
                 # User prompt for inputting the story segment
@@ -90,6 +88,7 @@ class ReaderSimulator:
         try:
             # Create a chain by combining the prompt with the LLM
             chain = prompt | self.llm
+
         except:
             warnings.warn("The prompt is invalid. Check LangChain or graph configuration.")
             return None
@@ -125,12 +124,12 @@ class ReaderSimulator:
         Parse the LLM's feedback to extract logical and emotional critiques.
         Uses helper function to extract content between predefined markers.
         """
-        self.run()
-        if self.response:
+        response = self.run()
+        if response:
             # Extract logical confusion and suggestions
-            self.logical_response = get_content_between_a_b("## logical detail confusion:","## character growth confusion:", self.response)
+            self.logical_response = get_content_between_a_b("## logical detail confusion:","## character growth confusion:", response)
             # Extract emotional confusion and suggestions
-            self.emotion_response = get_content_between_a_b("## character growth confusion:","## END", self.response)
+            self.emotion_response = get_content_between_a_b("## character growth confusion:","## END", response)
         else:
             warnings.warn("In reader, the generation response is empty.")
             sys.exit()

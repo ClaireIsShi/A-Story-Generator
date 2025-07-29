@@ -85,7 +85,7 @@ MainGraph.add_node ( "End" , end_subgraph )  # Generates story endings
 
 # Define edges to create the story generation workflow
 MainGraph.add_edge ( START , "StoryStarter" )  # Workflow begins with story setup
-MainGraph.add_edge ( "StoryStarter" , "PlainGenerator" )  # After setup, generate initial plot twist
+MainGraph.add_edge ( "StoryStarter" , "TwistGenerator" )  # After setup, generate initial plot twist
 MainGraph.add_edge ( "PlainGenerator" , "Expander" )  # Route plain segments to expander
 MainGraph.add_edge ( "TwistGenerator" , "Expander" )  # Route twists to expander
 

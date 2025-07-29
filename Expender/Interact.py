@@ -26,10 +26,10 @@ from Memory.MemoryStore import MemoryStore
 
 # Prompt template for completing incomplete story endings
 FINISH_SENTENCE_PROMPT = """
-You're a good story writer and a native speaker of {language}. Now you get one part of your story:{story}. Your job is to complete the story and delete repetitive part.
+You're a good story writer and a native speaker of {language}. Now you get one part of your story:{story}. Your job is to complete the story and delete the repetitive part.
 Follow these steps below to edit this story part:
-1. Read the story part carefully and delete repetitive part;
-2. Check the last sentence of this part of story, if the last sentence is not complete, you should generate a new sentence to complete that one sentence and output the completed whole story. 
+1. Read the story part carefully and delete the repetitive parts;
+2. Check the last sentence of this part of the story. If the last sentence is not complete, you should generate a new sentence to complete that one sentence and output the completed whole story. 
 Output your story in this format:
 ## whole story:
 <your new story>.

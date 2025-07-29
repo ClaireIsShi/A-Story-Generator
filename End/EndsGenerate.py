@@ -20,10 +20,10 @@ sys.path.insert(0, parent_dir)
 
 # Prompt template for generating story endings
 END_PROMPT = '''
-You are a story writer, also a native speaker of {language}.Here's a story needs an ending.
+You are a story writer, also a native speaker of {language}. Here's a story that needs an ending.
 The former story's outline is: {outline}. And the last story is: {specific_story}.
-Here's some basic information about the story: main character is {main_character}, main goal is {main_goal}, topic is {topic}.
-now please write a good ending for this story.
+Here's some basic information about the story: the main character is {main_character}, the main goal is {main_goal}, and the topic is {topic}.
+Now, please write a good ending for this story.
 Follow the format:
 ## ending:
 <put your ending text here>

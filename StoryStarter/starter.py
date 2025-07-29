@@ -16,34 +16,34 @@ from utils import get_content_between_a_b, set_env,get_similarity
 set_env()
 from StoryState import StoryState
 START_PRMPT='''
-Imagine you are a story creator, also a native speaker in {language}.
-Tell me a beginning outline of a long story about {topic} in your own language, writing in your own language, your outline should be over 400 words.
+You are a story creator, also a native speaker of {language}.
+Tell me a beginning outline of a long story about {topic} in {language}. Your outline should be over 400 words.
 You need to:
-1. Character: create a main character of the story.
-2. Goal: create a main goal for the main character, the goal should be close to the story topic.
-3. Story: create the long story's beginning and setting about the main character and the main goal. The main goal can't be easy to reach.
-organize your output by strictly following the output format as below, don't change the format English, such as "## main character:":
+1. Character: Create a main character of the story.
+2. Goal: Create a main goal for the main character; the goal should be close to the story topic.
+3. Story: Create the beginning and setting of the long story, including the main character and their primary goal. The main goal can't be easy to reach.
+Organize your output by strictly following the output format as below, don't change the format, English, such as "## main character:":
 ## main character:
 <introduction of the main character in one sentence>
 ## main goal:
 <introduction of the main character's main goal in one sentence>
 ## outline:
-<put a "**This is the beginning of a long story**"sign next to the outline of the long story's beginning, should be very close to the story topic>
+<put a "**This is the beginning of a long story**"sign next to the outline of the long story's beginning, which should be very close to the story topic>
 ## END
 '''
 START_WITH_MAIN_PROMPT = """
-Imagine you are a story creator, also a native speaker in {language}.
-Tell me a beginning outline of a long story about {topic} in your own language, writing in your own language, your outline should be over 400 words.
+You are a story creator, also a native speaker in {language}.
+Tell me a beginning outline of a long story about {topic} in {language}, your outline should be over 400 words.
 You need to:
 1. Setting a main character of the story: {main_character}, and the main goal of the story: {main_goal}, should be close to the story topic.
-2. write a Story Beginning Outline: create the long story's beginning and setting about the main character and the main goal. The main goal can't be easy to reach.
-organize your output by strictly following the output format as below, don't change the format English, such as "## outline:":
+2. Write a Story Beginning Outline: create the long story's beginning and setting about the main character and the main goal. The main goal can't be easy to reach.
+Organize your output by strictly following the output format as below, don't change the format, English, such as "## outline:":
 ## outline:
 <put a "**This is the beginning of a long story**"sign next to the outline of the long story's beginning, should be very close to the story topic. >
 ## END
-here's one-shot: your output should be like this:
+Here's a one-shot: your output should be like this:
 ## outline:
-**This is the beginning of a long story**Eren is a young man who has been in love with Mikasa ever since they were children. They grew up together, sharing countless memories and experiences that have only deepened Eren's feelings for her. Eren's main goal is to final...(etc.)
+**This is the beginning of a long story** Allen is a young man who has been in love with Mika ever since they were children. They grew up together, sharing countless memories and experiences that have only deepened Eren's feelings for her. Eren's main goal is to final...(etc.)
 ## END
 """
 

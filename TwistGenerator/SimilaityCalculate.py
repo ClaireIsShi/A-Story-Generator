@@ -20,19 +20,18 @@ sys.path.insert(0, parent_dir)
 
 LENGTH = 300
 IMPORTANT_PROMPT = """
-Here is a outline of a story part. You need to extract the key parts of this outline from it.
+Here is a part of a story:{last_story}. You need to extract the key parts from it.
 Follow these steps:
-1. Extract the beginning and the end of the story;
-2. Summarize the important contents of the beginning and the end;
+1. Extract the character's goal of the story;
+2. Summarize the important contents of the beginning and the goal.
 3. Your language should be {language}.
-The operation outline you need to follow is as follows: {last_story}
-Output your result in the following format, don't change the format English, such as "## abstraction:":
+Output your result in the following format, don't change the format, English, such as "## abstraction:":
 ## abstraction:
-<here put your abstraction of the outline in particular language>
+<here, put your abstraction of the outline in a particular language>
 ## END
 """
 ABSTRACT_PROMPT ="""
-You are a knowledge graph extractor. Your task is to extract the relevant triples of the knowledge graph from the given text based on the following relationships :{abstract}. Output the knowledge graph triples in a specific ER(Entity-Relationship Model)format. Here's an example:
+You are a knowledge graph extractor. Your task is to extract the relevant triples of the knowledge graph from the given text based on the following relationships. Your output nodes must contain the goal node. Here's the abstraction:{abstract}. Output the knowledge graph triples in a specific ER(Entity-Relationship Model)format. Here's an example:
 {{
   "entities": [
     {{"id": "e1", "name": "William Shakespeare", "type": "Person"}},
@@ -46,21 +45,20 @@ You are a knowledge graph extractor. Your task is to extract the relevant triple
 }}
 Output your result in the following format, abstract particular words in {language}, don't change the format English, such as "## KG:"::
 ## KG:
-<here put your knowledge graph in particular language>
+<here, put your knowledge graph in a particular language>
 ## END
 """
 GENERATE_TWIST_PRMPT = """
-You're a story generator and a native speaker of {language}. Your task is to generate a extra node and its respect relations based on the following entities and relations of the short story, and generate corresponding outline at least write {length} words in {language}: {KG}.
+You're a story generator and a native speaker of {language}. Your task is to generate an extra node and its respective relations based on the following entities and relations of the short story, and generate a corresponding outline, at least write {length} words in {language}: {KG}.
 Follow these steps:
-1. find the most interesting part to generate a story obstruct node;
-2. generate a story obstruct node, and its respect relations to existed nodes, let the story can be expend based on the original nodes;
-3. based on the story obstruct node, generate the continuation of the story, your outline should reflect some growth of the related characters, better be around the story obstruct node;
-4. Your output should be in {language}, and your story should be still across to this topic: {topic}.
-Output your result in the following format,don't change the format English, such as "## KG after generated:":
-## KG after generated:
-<here add your generated node and relations to the original KG, in original ER(Entity-Relationship Model) format>
+1. Find the most interesting part to generate a story obstacle node.
+2. generate a story obstruct node, and its respective relations to existing nodes, so that the story can be expanded based on the original nodes;
+3. Based on the story's obstructing node, generate the continuation of the story. Your outline should reflect some growth of the related characters, preferably around the story obstructing node.
+4. Your output should be in {language}, and your story should still be on this topic: {topic}.
+Output your result in the following format, don't change the format, English, such as "## KG after generated:":## KG after generated:
+<here, add your generated node and relations to the original KG, in original ER(Entity-Relationship Model) format>
 ## outline:
-<here put your story outline in particular language at least write {length} words>
+<here, put your story outline in a particular language, at least write {length} words>
 ## END
 """
 

@@ -1,0 +1,13 @@
+
+__pycache__/
+*.py[cod]
+*$py.class
+dist/
+build/
+*.egg-info/
+venv/
+
+# 日志和缓存
+*.log
+.DS_Store
+.idea/

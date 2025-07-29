@@ -37,17 +37,17 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
 GENERATE_PROMPT="""
-You're a story generator and a native speaker of {language}. Your task is to generate outlines in {language} continuing write this story based on {last_outline}, your outline must be close to topic: '{topic}' and the goal: '{goal}'. Bsed on your memory:{long_term_memory}
+You're a story generator and a native speaker of {language}. Your task is to generate outlines in {language}, continuing to write this story based on {last_outline}, your outline must be close to the topic: '{topic}' and the goal: '{goal}'. Based on your memory:{long_term_memory}
 Follow these steps:
-1. create 3 DIFFERENT continuing outlines based on the original outline at least at {length} words;
-2. Your output should be in {language}, and your story should be still across to this topic: {topic}.
-Output your result in the following format, don't change the format English, such as "## Outline1:":
+1. Create 3 DIFFERENT continuing outlines based on the original outline, at least {length} words;
+2. Your output should be in {language}, and your story should still be on this topic: {topic}.
+Output your result in the following format, don't change the format, English, such as "## Outline1:":
 ## Outline1:
-<here put your first outline in {language}>
+<here, put your first outline in {language}>
 ## Outline2:
-<here put your second different outline in {language}>
+<here, put your second different outline in {language}>
 ## Outline3:
-<here put your third different outline in {language}>
+<here, put your third different outline in {language}>
 ## END
 """
 
@@ -55,16 +55,16 @@ Output your result in the following format, don't change the format English, suc
 
 ###########################
 SELECT_PROMPT="""
-selecting the most funny continuing outlines from the following three outlines:
+Selecting the most funny continuing outlines from the following three outlines:
 {outline1},{outline2},{outline3}, and give me your reason. 
 Follow these steps:
-1. analysis these three outlines;
-2. select the one most funny continuing outlines from these three outlines;
-Output your result in the following format,don't change the format English, such as"## Reason:":
+1. Analyze these three outlines.
+2. Select the one most funny continuing outline from these three outlines.
+Output your result in the following format, don't change the format, English, such as"## Reason:":
 ## Reason:
-<here put your reason>
+<here, put your reason>
 ## Selected Outline:
-< here put your selected outline of these 3 choices>
+< here, put your selected outline of these 3 choices>
 ## END
 """
 

@@ -15,7 +15,9 @@ def set_env():
         if not os.environ.get ( var ):
             os.environ[var] = getpass.getpass ( f"{var}: " )
     # Set environment variables to ignore MKL warnings
-
+    os.environ["OPENAI_API_KEY"] = "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"
+    os.environ["ANTHROPIC_API_KEY"] = "sk-zk1tz3bfNF6h2VVZ035dE4Ea431f43F4A7F90bE8820792B3"
+    os.environ["ANTHROPIC_API_BASE"] = "https://aihubmix.com"
 
     os.environ['MKL_SERVICE_FORCE_INTEL'] = '1'
     os.environ['MKL_THREADING_LAYER'] = 'GNU'

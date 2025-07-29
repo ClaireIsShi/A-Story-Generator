@@ -29,34 +29,34 @@ from StoryState import StoryState
 set_env()
 
 EXPENDER_SYS_PRMPT = """
-You're a talented story writer and a native speaker of {language}. Your task is to edit for a part of story in {language} based on the following OUTLINE:{last_outline}. Remember this: it's ok to generate or delete some details that the original outline doesn't tell, such as characters' names, emotions, logics, and personal stories, as long as they're logically appropriate, keep specific as possible.
+You're a talented story writer and a native speaker of {language}. Your task is to edit a part of the story in {language} based on the following OUTLINE:{last_outline}. Remember this: it's ok to generate or delete some details that the original outline doesn't tell, such as characters' names, emotions, logics, and personal stories, as long as they're logically appropriate, and keep as specific as possible.
 """
 HUMAN_INITIAL_PROMPT = """
 Now, I'm writing a story based on the following information:
 topic: {topic}, Main character: {main_character}, Main Goal:{main_goal} language: {language}.
-Your task is to expand specific writing based on the OUTLINE:{last_outline}, your expended story should be still across to this topic: {topic}. 
+Your task is to expand specific writing based on the OUTLINE:{last_outline}, your expanded story should still be focused on this topic: {topic}. 
 Follow these steps:
-1. Expand the writing based on the original outline at least at {length} words;
-2. It's ok to generate some details that the original outline doesn't tell, such as characters' names and personal stories, as long as they're logically appropriate, keep specific as possible;
-3. Add some details to make this part of story more readable;
-4. Don't over write the settings or information of the main characters. Make sure your story is fresh to readers who have already read the former story lines;
-5. Your output should be in {language}, and your story should be still across to this topic: {topic} and OUTLINE:{last_outline}.
-Output your result without any explain.
+1. Expand the writing based on the original outline at least to {length} words;
+2. It's ok to generate some details that the original outline doesn't tell, such as characters' names and personal stories, as long as they're logically appropriate and as specific as possible.
+3. Add some details to make this part of the story more readable.
+4. Don't overwrite the settings or information of the main characters. Make sure your story is fresh to readers who have already read the former storylines.
+5. Your output should be in {language}, and your story should still be focused on this topic: {topic} and OUTLINE:{last_outline}.
+Output your result without any explanation.
 """
 
 HUMAN_REWRITE_PROMPT = """
-After reading your expended story, I find there are some logical details's issues and character growth issues in your story. Here's my logical detail suggestion:{logical_confusion_and_suggestion}.
-and here's my character suggestion:{character_growth_confusion_and_suggestion}.
+After reading your expanded story, I find there are some logical details and character growth issues in your story. Here's my logical detail suggestion:{logical_confusion_and_suggestion}.
+And here's my character suggestion:{character_growth_confusion_and_suggestion}.
 Edit your last output to generate a better one that's based on my logical suggestion and character growth suggestion. Still, make sure your story is across to this topic: {topic} and OUTLINE:{last_outline}.
 Follow these steps:
-1. look at the logical and character growth suggestion, and edit your last output to generate a better one that's based on my logical suggestion and emotional suggestion. Still, make sure your story is across to this topic: {topic} and OUTLINE:{last_outline}.
-2. Don't over write the settings or information of the main characters. Make sure your story is fresh to readers who have already read the former story lines.
-Output your result without any explain. 
+1. Look at the logical and character growth suggestion, and edit your last output to generate a better one that's based on my logical suggestion and emotional suggestion. Still, make sure your story is across to this topic: {topic} and OUTLINE:{last_outline}.
+2. Don't overwrite the settings or information of the main characters. Make sure your story is fresh to readers who have already read the former storylines.
+Output your result without any explanation. 
 """
 CHANGE_OUTLINE_PROMPT = """
 You're a good story writer and a native speaker of {language}. Now you get one part of your story:{story}.
 The story is generated based on this outline: {last_outline} 
-Your job is to see if there's any extra detail and added information in this part of story comparing to its original outline, if there's any, you should generate a new outline based on this part of story. Output your result without any explain.
+Your job is to see if there's any extra detail and added information in this part of the story compared to its original outline. If there is any, you should generate a new outline based on this part of the story. Output your result without any explanation.
 Follow this format:
 ## new_outline:
 <your new outline>
