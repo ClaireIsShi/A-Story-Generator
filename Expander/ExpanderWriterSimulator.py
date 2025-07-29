@@ -1,6 +1,6 @@
 '''
 -- @Time    : 2025/7/11 16:03
--- @File    : ExpenderWriterSimulator.py
+-- @File    : ExpanderWriterSimulator.py
 -- @Project : StoryGenerator
 -- @IDE     : PyCharm
 '''
@@ -81,7 +81,7 @@ from settings import WRITE_LLM
 class ExpenderWriterSimulator:
     def __init__(self,state:StoryState,llm = WRITE_LLM, length:int = 800):
         """
-        Initialize an instance of the Expender class.
+        Initialize an instance of the Expander class.
 
         :param state: (StoryState) A state object containing story information, such as topic, main character, main goal, language, and the latest story outline.
         :param llm: (ChatAnthropic) A language model instance, defaulting to ChatAnthropic with a specific model.

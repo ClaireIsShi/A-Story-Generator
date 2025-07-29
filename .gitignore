@@ -6,8 +6,10 @@ dist/
 build/
 *.egg-info/
 venv/
-
+*/__pycache__/
 # 日志和缓存
 *.log
 .DS_Store
-.idea/
+
+.idea
+.idea/*

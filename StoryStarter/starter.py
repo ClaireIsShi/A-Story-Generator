@@ -149,7 +149,7 @@ def judge_if_similarity_higher_enough(state:StoryState) -> bool:
                       f"Your input is: {state}")
         return False
 
-from Memory.MemoryStore import MemoryStore
+from memory_storage.MemoryStore import MemoryStore
 def store_to_memory(state:StoryState) -> StoryState:
     memory_store = MemoryStore(state)
     memory_store.first_store()

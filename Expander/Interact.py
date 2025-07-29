@@ -4,8 +4,8 @@
 -- @Project : StoryGenerator
 -- @IDE     : PyCharm
 '''
-from Expender.ReaderSimulator import ReaderSimulator
-from Expender.ExpenderWriterSimulator import ExpenderWriterSimulator
+from Expander.ReaderSimulator import ReaderSimulator
+from Expander.ExpanderWriterSimulator import ExpenderWriterSimulator
 import os
 from langchain_anthropic import ChatAnthropic
 from typing import Optional
@@ -22,7 +22,7 @@ sys.path.insert(0, parent_dir)
 from utils import set_env, get_content_between_a_b
 from StoryState import StoryState
 from settings import EXPEND_LEN , FINAL_STORY_PATH
-from Memory.MemoryStore import MemoryStore
+from memory_storage.MemoryStore import MemoryStore
 
 # Prompt template for completing incomplete story endings
 FINISH_SENTENCE_PROMPT = """

@@ -4,10 +4,10 @@
 -- @Project : StoryGenerator
 -- @IDE     : PyCharm
 '''
-from Expender.Interact import calculate_similarity,generate_expansion, write_to_memory, clean_outline
+from Expander.Interact import calculate_similarity,generate_expansion, write_to_memory, clean_outline
 
 '''
-from Expender import generate_expansion, write_to_memory, clean_outline,calculate_similarity
+from Expander import generate_expansion, write_to_memory, clean_outline,calculate_similarity
 state = generate_expansion ( state, length, write_to_json:Optional[str] = None )
 state = calculate_similarity(state)
 state = clean_outline(state)
