@@ -13,3 +13,14 @@ venv/
 
 .idea
 .idea/*
+
+
+build/
+dist/
+*.egg-info/
+
+.env
+.env.local
+*.secret
+
+.ipynb_checkpoints/
