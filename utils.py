@@ -19,8 +19,9 @@ def set_env():
 
     os.environ['MKL_SERVICE_FORCE_INTEL'] = '1'
     os.environ['MKL_THREADING_LAYER'] = 'GNU'
-    _set_env ( "OPENAI_API_KEY" )
-    _set_env ( "ANTHROPIC_API_KEY" )
+    _set_env ( "OPENAI_API_KEY" ,)
+    _set_env ( "ANTHROPIC_API_KEY",)
+    _set_env ( "ANTHROPIC_BASE_URL", )
 
 from typing import List
 import numpy as np
@@ -38,13 +39,17 @@ def get_content_between_a_b(a, b, text, none_delete_n = False):
     :param a: Start marker
     :param b: End marker
     :param text: Text to extract from
-    :return: Extracted content with leading and trailing whitespace removed
+    :return: Extracted content with leading and trailing whitespace removed, or empty string if markers not found
     """
-    if none_delete_n:
-        return re.search(f"{a}(.*?)\n{b}", text, re.DOTALL).group(1).strip()
-
-    else:
-        return re.search(f"{a}(.*?)\n{b}", text, re.DOTALL).group(1).strip().strip("\n")
+    # Use a more flexible pattern that doesn't require newline before end marker
+    match = re.search(f"{a}(.*?){b}", text, re.DOTALL)
+    if match:
+        content = match.group(1).strip()
+        if not none_delete_n:
+            content = content.strip("\n")
+        return content
+    # Return empty string if no match found
+    return ""
 if __name__ == '__main__':
     test_text = """
     ## start

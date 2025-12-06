@@ -8,6 +8,7 @@ import os
 import warnings
 from typing import Tuple , Dict
 
+
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
 import os,sys
@@ -33,11 +34,11 @@ Do you have any idea about the story? Follow these steps to give me your respons
 1. You need to read this part of the story CAREFULLY;
 2. Is there any part you find hard to logically understand? Give me your confusion and suggestions. If you can understand this part of the story well, then just give an empty input;
 3. Do these details in this part of the story logically make sense? Is the character growth of {main_character} detailed enough? If not, give me your suggestion. Do you think the details are good enough for you to understand this part of the story? If you can understand character growth well, then just give me an empty response.
-Give me your response in the following format:
+Give me your response in the following format, fulfill it:
 ## logical detail confusion:
-<here, put your confusion and suggestion in the logic of the part story in {language} you find in step 2>
-## Character growth confusion:
-<here, put your confusion and suggestion in the character growth of the part story in {language} you find in step 3>
+<here, put your confusion and suggestion in the logic of the part story in {language} you find in step 2. For example: I think Mary has no reason to open the door.>
+## character growth confusion:
+<here, put your confusion and suggestion in the character growth of the part story in {language} you find in step 3, For example: I think Mary need to be more careful in her decision.>
 ## END
 """
 
@@ -89,6 +90,8 @@ class ReaderSimulator:
             # Create a chain by combining the prompt with the LLM
             chain = prompt | self.llm
 
+
+
         except:
             warnings.warn("The prompt is invalid. Check LangChain or graph configuration.")
             return None
@@ -125,11 +128,13 @@ class ReaderSimulator:
         Uses helper function to extract content between predefined markers.
         """
         response = self.run()
+
         if response:
             # Extract logical confusion and suggestions
             self.logical_response = get_content_between_a_b("## logical detail confusion:","## character growth confusion:", response)
             # Extract emotional confusion and suggestions
             self.emotion_response = get_content_between_a_b("## character growth confusion:","## END", response)
+
         else:
             warnings.warn("In reader, the generation response is empty.")
             sys.exit()
@@ -143,3 +148,18 @@ class ReaderSimulator:
         print(f"Reader is reading...")
         self.response_parser()
         return self.logical_response, self.emotion_response,self.state
+
+
+if __name__ == "__main__":
+    state = StoryState(
+        Topic="The Future of Technology",
+        MainCharacter="Elon Musk",
+        MainGoal="To create a sustainable future for humanity",
+        Language="English"
+    )
+    text = "In the future, Elon Musk plans to build a space station to colonize Mars."
+    reader = ReaderSimulator(state, text)
+    logical_response, emotion_response, state = reader()
+    print(logical_response)
+    print(emotion_response)
+    print(state)

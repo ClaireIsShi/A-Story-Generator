@@ -21,7 +21,7 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 from utils import set_env, get_content_between_a_b
 from StoryState import StoryState
-from settings import EXPEND_LEN , FINAL_STORY_PATH
+from settings import EXPEND_LEN , FINAL_STORY_PATH , WRITE_LLM
 from memory_storage.MemoryStore import MemoryStore
 
 # Prompt template for completing incomplete story endings
@@ -50,13 +50,13 @@ def get_whole_story(story: str):
 set_env()
 
 
-def interact(state: StoryState, length: int = EXPEND_LEN, llm=ChatAnthropic(model_name="claude-3-opus-20240229")):
+def interact(state: StoryState, length: int = EXPEND_LEN, llm=WRITE_LLM):
     """
     Facilitates interaction between the story expander and reader simulator to generate story content.
     Handles both initial story generation (when StartSign is True) and subsequent expansions (when StartSign is False).
     :param state: (StoryState) Object containing current story state and metadata.
     :param length: (int) Target length for the generated story content (default from EXPEND_LEN).
-    :param llm: (ChatAnthropic) Language model instance used for generation (default: claude-3-opus-20240229).
+    :param llm: (ChatAnthropic) Language model instance used for generation (default: WRITE_LLM).
     :return: (tuple) Generated text content and updated StoryState object.
     """
     if state['StartSign']:

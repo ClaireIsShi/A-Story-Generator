@@ -19,6 +19,6 @@ STORY_SETTING_PATH = current_dir + "/memory_storage/story_setting.json"
 MEMORY_STORAGE_PATH = current_dir + "/memory_storage/memory.json"
 FINAL_STORY_PATH = current_dir + "/result.json"
 # which LLM to expand story
-WRITE_LLM = ChatAnthropic(model = 'claude-3-sonnet-20240229')
+WRITE_LLM = ChatAnthropic(model = 'claude-sonnet-4-5', base_url = os.getenv('ANTHROPIC_BASE_URL'))
 # which LLM to use as utils
 UTIL_LLM = ChatOpenAI(model = 'gpt-3.5-turbo')

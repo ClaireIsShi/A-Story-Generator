@@ -50,11 +50,34 @@ Here's a one-shot: your output should be like this:
 
 # parser
 def get_main_character(prompt):
-    return get_content_between_a_b('## main character:','## main goal:',prompt)
+    try:
+        result = get_content_between_a_b('## main character:','## main goal:',prompt)
+        if not result:
+            warnings.warn("[错误位置: get_main_character] 无法从提示词中提取主要角色信息，请检查 LLM 返回格式是否正确")
+        return result
+    except Exception as e:
+        warnings.warn(f"[错误位置: get_main_character] 提取主要角色时发生异常: {str(e)}")
+        return None
+
 def get_main_goal(prompt):
-    return get_content_between_a_b('## main goal:','## outline:',prompt)
+    try:
+        result = get_content_between_a_b('## main goal:','## outline:',prompt)
+        if not result:
+            warnings.warn("[错误位置: get_main_goal] 无法从提示词中提取主要目标信息，请检查 LLM 返回格式是否正确")
+        return result
+    except Exception as e:
+        warnings.warn(f"[错误位置: get_main_goal] 提取主要目标时发生异常: {str(e)}")
+        return None
+
 def get_outline(prompt):
-    return get_content_between_a_b('## outline:','## END', prompt)
+    try:
+        result = get_content_between_a_b('## outline:','## END', prompt)
+        if not result:
+            warnings.warn("[错误位置: get_outline] 无法从提示词中提取故事大纲信息，请检查 LLM 返回格式是否正确")
+        return result
+    except Exception as e:
+        warnings.warn(f"[错误位置: get_outline] 提取故事大纲时发生异常: {str(e)}")
+        return None
 
 
 
@@ -63,32 +86,77 @@ llm = UTIL_LLM
 # Node
 
 def check_keys(state: dict):
-    valid_keys = {"Language" , "Topic"}
-    all_keys = valid_keys.union ( {"MainCharacter" , "MainGoal"} )
-    state_keys = state.keys()
+    try:
+        valid_keys = {"Language" , "Topic"}
+        all_keys = valid_keys.union ( {"MainCharacter" , "MainGoal"} )
+        state_keys = set(state.keys())
 
-    if state_keys not in (valid_keys , all_keys):
-        import warnings
-        warnings.warn (
-            "Input error: The input must contain either 'Language' and 'Topic' only, or all four keys: 'Language', 'Topic', 'MainCharacter', 'MainGoal'." )
+        if state_keys != valid_keys and state_keys != all_keys:
+            warnings.warn(
+                f"[错误位置: check_keys] 输入状态字典的键不正确。\n"
+                f"输入必须包含以下两种情况之一：\n"
+                f"1. 仅包含 'Language' 和 'Topic'\n"
+                f"2. 包含所有四个键: 'Language', 'Topic', 'MainCharacter', 'MainGoal'\n"
+                f"当前输入的键: {list(state_keys)}"
+            )
+            import sys
+            sys.exit ( 1 )
+        return state
+    except Exception as e:
+        warnings.warn(f"[错误位置: check_keys] 检查状态字典键时发生异常: {str(e)}")
         import sys
-        sys.exit ( 1 )
-    return state
+        sys.exit(1)
 def clean_dict(state: dict):
-    return {
-        'Language': state['Language'],
-        "Topic": state["Topic"]
-    }
+    try:
+        if 'Language' not in state or 'Topic' not in state:
+            warnings.warn(
+                f"[错误位置: clean_dict] 状态字典缺少必需的键 'Language' 或 'Topic'。\n"
+                f"当前输入的键: {list(state.keys())}"
+            )
+            return None
+        return {
+            'Language': state['Language'],
+            "Topic": state["Topic"]
+        }
+    except Exception as e:
+        warnings.warn(f"[错误位置: clean_dict] 清理状态字典时发生异常: {str(e)}")
+        return None
 
 def setting_of_story(state:StoryState)-> StoryState:
     print("Setting up StoryStarterBeginning...")
     def _set_story(state):
-        prompt = START_PRMPT.format ( language=state['Language'] , topic=state['Topic'] )
         try:
-            response = llm.invoke ( prompt ).content
+            if 'Language' not in state or 'Topic' not in state:
+                warnings.warn(
+                    f"[错误位置: setting_of_story._set_story] 状态字典缺少必需的键 'Language' 或 'Topic'。\n"
+                    f"当前输入的键: {list(state.keys())}"
+                )
+                return None
+            
+            prompt = START_PRMPT.format ( language=state['Language'] , topic=state['Topic'] )
+            try:
+                response = llm.invoke ( prompt ).content
+            except Exception as e:
+                warnings.warn(
+                    f"[错误位置: setting_of_story._set_story] 调用 LLM 生成故事设置时失败: {str(e)}\n"
+                    f"请检查网络连接、API 密钥或 LLM 配置"
+                )
+                return None
+            
             main_goal = get_main_goal ( response )
             main_character = get_main_character ( response )
             outline = get_outline ( response )
+            
+            if not main_goal or not main_character or not outline:
+                warnings.warn(
+                    f"[错误位置: setting_of_story._set_story] 从 LLM 响应中解析内容失败。\n"
+                    f"主要目标: {'已提取' if main_goal else '未提取'}\n"
+                    f"主要角色: {'已提取' if main_character else '未提取'}\n"
+                    f"故事大纲: {'已提取' if outline else '未提取'}\n"
+                    f"请检查 LLM 返回格式是否符合预期"
+                )
+                return None
+            
             return {
                 'Topic': state['Topic'] ,
                 'Language': state['Language'] ,
@@ -98,27 +166,79 @@ def setting_of_story(state:StoryState)-> StoryState:
                 'StartSign': True ,
                 'similarity': 0,
             }
-        except:
-            warnings.warn (
-                f"Error in StoryStarter: setting_of_story, please check your input.\nYour input is: {state}" )
+        except KeyError as e:
+            warnings.warn(
+                f"[错误位置: setting_of_story._set_story] 状态字典缺少必需的键: {str(e)}\n"
+                f"当前输入的键: {list(state.keys()) if isinstance(state, dict) else '非字典类型'}"
+            )
+            return None
+        except Exception as e:
+            warnings.warn(
+                f"[错误位置: setting_of_story._set_story] 设置故事时发生未知异常: {str(e)}\n"
+                f"输入状态: {state}"
+            )
             return None
 
     if state.get('MainCharacter') is not None:
         try:
+            if 'Language' not in state or 'Topic' not in state:
+                warnings.warn(
+                    f"[错误位置: setting_of_story (已有角色模式)] 状态字典缺少必需的键 'Language' 或 'Topic'。\n"
+                    f"当前输入的键: {list(state.keys())}"
+                )
+                return None
+            
             MainGoal = state.get ( 'MainGoal' )
-            p = START_WITH_MAIN_PROMPT.format ( language=state['Language'] , topic=state['Topic'] ,main_character=state['MainCharacter'],main_goal=MainGoal)
-            response = llm.invoke ( p ).content
+            if not MainGoal:
+                warnings.warn(
+                    f"[错误位置: setting_of_story (已有角色模式)] 状态字典中 'MainGoal' 为空或不存在。\n"
+                    f"当前输入的键: {list(state.keys())}"
+                )
+                return None
+            
+            try:
+                p = START_WITH_MAIN_PROMPT.format ( 
+                    language=state['Language'] , 
+                    topic=state['Topic'] ,
+                    main_character=state['MainCharacter'],
+                    main_goal=MainGoal
+                )
+            except KeyError as e:
+                warnings.warn(
+                    f"[错误位置: setting_of_story (已有角色模式)] 格式化提示词时缺少必需的键: {str(e)}\n"
+                    f"当前输入的键: {list(state.keys())}"
+                )
+                return None
+            
+            try:
+                response = llm.invoke ( p ).content
+            except Exception as e:
+                warnings.warn(
+                    f"[错误位置: setting_of_story (已有角色模式)] 调用 LLM 生成故事大纲时失败: {str(e)}\n"
+                    f"请检查网络连接、API 密钥或 LLM 配置"
+                )
+                return None
+            
             outline = get_outline ( response )
+            if not outline:
+                warnings.warn(
+                    f"[错误位置: setting_of_story (已有角色模式)] 从 LLM 响应中提取故事大纲失败。\n"
+                    f"请检查 LLM 返回格式是否符合预期"
+                )
+                return None
+            
             state ['RecentStory'] =[outline]
             state['similarity'] = 0
             state['StartSign'] = True
             state['TotalStoryLength'] = 0
             return state
-        except:
-            warnings.warn(f"Input error:\n"
-                          f"Your input can be Dict with keys: 'Language', 'Topic', 'MainGoal', 'MainCharacter'.\n"
-                          f"or Dict with keys:'Language', 'Topic'\n"
-                          f"But Your input is: {state}\n")
+        except Exception as e:
+            warnings.warn(
+                f"[错误位置: setting_of_story (已有角色模式)] 处理已有角色和目标的输入时发生异常: {str(e)}\n"
+                f"输入要求: 字典应包含键 'Language', 'Topic', 'MainGoal', 'MainCharacter'\n"
+                f"或仅包含键 'Language', 'Topic'\n"
+                f"当前输入: {state}"
+            )
             return None
     if state.get('MainCharacter') is None and state.get('MainGoal') is None:
         return _set_story(state)
@@ -126,12 +246,51 @@ def setting_of_story(state:StoryState)-> StoryState:
 
 def judge_if_similarity_higher_enough(state:StoryState) -> bool:
     try:
-        similarity_beginning = get_similarity (
-                [state['MainCharacter'] , state['MainGoal']]
-            )[1]
-        similarity_topic = get_similarity (
-                [state['Topic'] , state['MainGoal']]
-            )[1]
+        if 'MainCharacter' not in state or 'MainGoal' not in state or 'Topic' not in state:
+            warnings.warn(
+                f"[错误位置: judge_if_similarity_higher_enough] 状态字典缺少必需的键。\n"
+                f"需要包含: 'MainCharacter', 'MainGoal', 'Topic'\n"
+                f"当前输入的键: {list(state.keys())}"
+            )
+            return False
+        
+        try:
+            similarity_result = get_similarity([state['MainCharacter'] , state['MainGoal']])
+            if not similarity_result or len(similarity_result) < 2:
+                warnings.warn(
+                    f"[错误位置: judge_if_similarity_higher_enough] 计算主要角色与目标的相似度时返回结果格式不正确\n"
+                    f"返回结果: {similarity_result}"
+                )
+                return False
+            similarity_beginning = similarity_result[1]
+        except Exception as e:
+            warnings.warn(
+                f"[错误位置: judge_if_similarity_higher_enough] 计算主要角色与目标的相似度时发生异常: {str(e)}"
+            )
+            return False
+        
+        try:
+            similarity_result = get_similarity([state['Topic'] , state['MainGoal']])
+            if not similarity_result or len(similarity_result) < 2:
+                warnings.warn(
+                    f"[错误位置: judge_if_similarity_higher_enough] 计算主题与目标的相似度时返回结果格式不正确\n"
+                    f"返回结果: {similarity_result}"
+                )
+                return False
+            similarity_topic = similarity_result[1]
+        except Exception as e:
+            warnings.warn(
+                f"[错误位置: judge_if_similarity_higher_enough] 计算主题与目标的相似度时发生异常: {str(e)}"
+            )
+            return False
+        
+        if 'Language' not in state:
+            warnings.warn(
+                f"[错误位置: judge_if_similarity_higher_enough] 状态字典缺少 'Language' 键，无法判断语言类型\n"
+                f"当前输入的键: {list(state.keys())}"
+            )
+            return False
+        
         if state['Language'].lower() == 'english':
             if similarity_beginning > 0.65 and similarity_topic > 0.15:
                 return True
@@ -142,25 +301,85 @@ def judge_if_similarity_higher_enough(state:StoryState) -> bool:
                 return True
             else:
                 return False
-    except:
-        warnings.warn(f"Error in StoryStarter: \nInput error:\n"
-                          f"Your input can be Dict with keys: 'Language', 'Topic', 'MainGoal', 'MainCharacter'.\n"
-                          f"or Dict with keys:'Language', 'Topic'\n"
-                      f"Your input is: {state}")
+    except KeyError as e:
+        warnings.warn(
+            f"[错误位置: judge_if_similarity_higher_enough] 状态字典缺少必需的键: {str(e)}\n"
+            f"输入要求: 字典应包含键 'Language', 'Topic', 'MainGoal', 'MainCharacter'\n"
+            f"或仅包含键 'Language', 'Topic'\n"
+            f"当前输入: {state}"
+        )
+        return False
+    except Exception as e:
+        warnings.warn(
+            f"[错误位置: judge_if_similarity_higher_enough] 判断相似度时发生未知异常: {str(e)}\n"
+            f"输入状态: {state}"
+        )
         return False
 
 from memory_storage.MemoryStore import MemoryStore
 def store_to_memory(state:StoryState) -> StoryState:
-    memory_store = MemoryStore(state)
-    memory_store.first_store()
-    memory_store.write_down_settings()
-    memory_store.write_down_memory()
-    return {
-        **state,  # 保留原状态中的所有键值对
-    }
+    try:
+        if not state:
+            warnings.warn(
+                f"[错误位置: store_to_memory] 输入状态为空，无法存储到内存"
+            )
+            return state
+        
+        try:
+            memory_store = MemoryStore(state)
+        except Exception as e:
+            warnings.warn(
+                f"[错误位置: store_to_memory] 创建 MemoryStore 实例时失败: {str(e)}\n"
+                f"请检查 MemoryStore 类的初始化和状态字典格式"
+            )
+            return state
+        
+        try:
+            memory_store.first_store()
+        except Exception as e:
+            warnings.warn(
+                f"[错误位置: store_to_memory] 执行 first_store() 时失败: {str(e)}"
+            )
+        
+        try:
+            memory_store.write_down_settings()
+        except Exception as e:
+            warnings.warn(
+                f"[错误位置: store_to_memory] 写入故事设置时失败: {str(e)}"
+            )
+        
+        try:
+            memory_store.write_down_memory()
+        except Exception as e:
+            warnings.warn(
+                f"[错误位置: store_to_memory] 写入记忆时失败: {str(e)}"
+            )
+        
+        return {
+            **state,  # 保留原状态中的所有键值对
+        }
+    except Exception as e:
+        warnings.warn(
+            f"[错误位置: store_to_memory] 存储到内存时发生未知异常: {str(e)}\n"
+            f"输入状态: {state}"
+        )
+        return state
 
 def judge_if_set_Main_by_user(state:StoryState) -> bool:
-    if state.get('MainCharacter') is None and state.get('MainGoal') is None:
+    try:
+        if not isinstance(state, dict):
+            warnings.warn(
+                f"[错误位置: judge_if_set_Main_by_user] 输入不是字典类型: {type(state)}"
+            )
+            return False
+        
+        if state.get('MainCharacter') is None and state.get('MainGoal') is None:
+            return False
+        else:
+            return True
+    except Exception as e:
+        warnings.warn(
+            f"[错误位置: judge_if_set_Main_by_user] 判断用户是否设置主要角色和目标时发生异常: {str(e)}\n"
+            f"输入状态: {state}"
+        )
         return False
-    else:
-        return True
